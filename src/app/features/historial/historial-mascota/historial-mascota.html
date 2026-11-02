@@ -1,0 +1,170 @@
+<section class="historial-contenedor">
+  <h2>Historial clínico</h2>
+
+  <p class="text-muted">Busca una mascota registrada para consultar su historial.</p>
+
+  <div class="card historial-card">
+    <div class="d-flex justify-content-between align-items-center">
+      <h4 class="mb-0">Buscar historial</h4>
+
+      <button type="button" class="btn btn-outline-primary btn-sm" (click)="cargarDatos()">
+        <i class="bi bi-arrow-clockwise me-1"></i>
+        Actualizar
+      </button>
+    </div>
+
+    <div class="row g-3 mt-2">
+      <!-- FILTRO POR ESPECIE -->
+
+      <div class="col-md-6">
+        <label class="form-label">Tipo de animal</label>
+
+        <select
+          class="form-select"
+          [(ngModel)]="especieSeleccionada"
+          (ngModelChange)="cambiarFiltro()"
+        >
+          <option value="">Todas las especies</option>
+          <option value="PERRO">Perro</option>
+          <option value="GATO">Gato</option>
+          <option value="OTRO">Otro</option>
+        </select>
+      </div>
+
+      <!-- OTRA ESPECIE -->
+      @if (especieSeleccionada === 'OTRO') {
+        <div class="col-md-6">
+          <label class="form-label"> Especificar tipo de animal </label>
+
+          <input
+            class="form-control"
+            list="especies-sugeridas"
+            [(ngModel)]="otraEspecie"
+            (ngModelChange)="limpiarSeleccion()"
+            placeholder="Ej. Loro, conejo, tortuga"
+          />
+
+          <datalist id="especies-sugeridas">
+            <option value="Loro"></option>
+            <option value="Conejo"></option>
+            <option value="Tortuga"></option>
+            <option value="Hámster"></option>
+            <option value="Iguana"></option>
+          </datalist>
+        </div>
+      }
+
+      <!-- SELECCIONAR MASCOTA -->
+      <div class="col-12">
+        <label class="form-label">Mascotas registradas</label>
+
+        <select class="form-select" [(ngModel)]="mascotaSeleccionadaId">
+          <option value="">Seleccione una mascota</option>
+
+          @for (mascota of mascotasFiltradas; track mascota.id) {
+            <option [value]="mascota.id">
+              {{ mascota.nombre }} - {{ nombreEspecie(mascota) }}
+            </option>
+          }
+        </select>
+
+        @if (mascotasFiltradas.length === 0) {
+          <small class="text-muted">
+            No hay mascotas registradas que coincidan con la búsqueda.
+          </small>
+        }
+      </div>
+    </div>
+
+    <hr class="my-4" />
+
+    <h4 class="mb-3">Atenciones registradas</h4>
+
+    @if (!mascotaSeleccionadaId) {
+      <p class="text-muted">Seleccione una mascota para consultar sus atenciones.</p>
+    } @else {
+      @if (mascotaSeleccionada; as mascota) {
+        <!-- DATOS DE LA MASCOTA -->
+        <div class="bg-light border rounded p-3 mb-4">
+          <div class="row g-3">
+            <div class="col-md-3">
+              <strong>Mascota:</strong>
+              <div>{{ mascota.nombre }}</div>
+            </div>
+
+            <div class="col-md-3">
+              <strong>Especie:</strong>
+              <div>{{ nombreEspecie(mascota) }}</div>
+            </div>
+
+            <div class="col-md-3">
+              <strong>Propietario:</strong>
+              <div>{{ obtenerPropietario(mascota) }}</div>
+            </div>
+
+            <div class="col-md-3">
+              <strong>Código propietario:</strong>
+              <div>{{ obtenerCodigoPropietario(mascota) }}</div>
+            </div>
+          </div>
+        </div>
+      }
+
+      @if (atencionesMascota.length === 0) {
+        <div class="alert alert-info">
+          Esta mascota todavía no tiene atenciones veterinarias registradas.
+        </div>
+      } @else {
+        <p class="text-muted">Total de atenciones: {{ atencionesMascota.length }}</p>
+
+        @for (atencion of atencionesMascota; track atencion.id) {
+          <div class="card border mb-3">
+            <div class="card-body">
+              <div class="d-flex flex-wrap justify-content-between gap-2 mb-3">
+                <div>
+                  <h5 class="mb-1">Atención veterinaria</h5>
+
+                  <span class="text-muted small">
+                    Código de cita:
+                    <strong>{{ obtenerCodigoCita(atencion) }}</strong>
+                  </span>
+                </div>
+
+                <span class="badge bg-success align-self-start"> Registrada </span>
+              </div>
+
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <strong>Fecha:</strong>
+                  <p class="mb-0">{{ atencion.fecha }}</p>
+                </div>
+
+                <div class="col-md-8">
+                  <strong>Motivo de consulta:</strong>
+                  <p class="mb-0">{{ atencion.motivo }}</p>
+                </div>
+
+                <div class="col-md-6">
+                  <strong>Diagnóstico:</strong>
+                  <p class="mb-0">{{ atencion.diagnostico }}</p>
+                </div>
+
+                <div class="col-md-6">
+                  <strong>Tratamiento:</strong>
+                  <p class="mb-0">{{ atencion.tratamiento }}</p>
+                </div>
+
+                <div class="col-12">
+                  <strong>Observaciones:</strong>
+                  <p class="mb-0">
+                    {{ atencion.observaciones || 'Sin observaciones' }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      }
+    }
+  </div>
+</section>

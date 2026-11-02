@@ -1,0 +1,120 @@
+
+<aside class="sidebar">
+  <h2 class="logo">
+    <i class="bi bi-heart-pulse"></i>
+    VetCare
+  </h2>
+
+  <nav class="menu">
+
+    <!-- INICIO -->
+    <a
+      routerLink="/"
+      routerLinkActive="activo"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      <i class="bi bi-house"></i>
+      <span>Inicio</span>
+    </a>
+
+    <!-- REGISTRO -->
+    <button
+      type="button"
+      class="menu-boton"
+      (click)="alternarRegistro()"
+      [attr.aria-expanded]="registroAbierto()"
+    >
+      <i class="bi bi-clipboard-plus"></i>
+      <span>Registro</span>
+
+      <i
+        class="bi ms-auto"
+        [class.bi-chevron-down]="!registroAbierto()"
+        [class.bi-chevron-up]="registroAbierto()"
+      ></i>
+    </button>
+
+    @if (registroAbierto()) {
+      <div class="submenu">
+
+        <a
+          routerLink="/registro/propietario"
+          routerLinkActive="activo"
+        >
+          <i class="bi bi-person-plus"></i>
+          <span>Registrar propietario</span>
+        </a>
+
+        <a
+          routerLink="/registro/mascota"
+          routerLinkActive="activo"
+        >
+          <i class="bi bi-heart-pulse"></i>
+          <span>Registrar mascota</span>
+        </a>
+
+      </div>
+    }
+
+    <!-- CONSULTAR REGISTROS -->
+    <a
+      routerLink="/registros"
+      routerLinkActive="activo"
+    >
+      <i class="bi bi-card-list"></i>
+      <span>Consultar registros</span>
+    </a>
+
+    <!-- CITAS -->
+    <button
+      type="button"
+      class="menu-boton"
+      (click)="alternarCitas()"
+      [attr.aria-expanded]="citasAbierto()"
+    >
+      <i class="bi bi-calendar-event"></i>
+      <span>Citas</span>
+
+      <i
+        class="bi ms-auto"
+        [class.bi-chevron-down]="!citasAbierto()"
+        [class.bi-chevron-up]="citasAbierto()"
+      ></i>
+    </button>
+
+    @if (citasAbierto()) {
+      <div class="submenu">
+
+        <!-- AGENDAR CITA -->
+        <a
+          routerLink="/citas"
+          routerLinkActive="activo"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <i class="bi bi-calendar-plus"></i>
+          <span>Agendar cita</span>
+        </a>
+
+        <!-- LISTA DE CITAS -->
+        <a
+          routerLink="/citas/lista"
+          routerLinkActive="activo"
+        >
+          <i class="bi bi-list-check"></i>
+          <span>Lista de citas</span>
+        </a>
+
+      </div>
+    }
+
+    <!-- HISTORIAL CLÍNICO -->
+    <a
+      routerLink="/historial"
+      routerLinkActive="activo"
+    >
+      <i class="bi bi-clipboard2-pulse"></i>
+      <span>Historial clínico</span>
+    </a>
+
+  </nav>
+</aside>

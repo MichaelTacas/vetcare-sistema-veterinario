@@ -1,0 +1,13 @@
+
+/* Mantener visible el rojo de los horarios ocupados */
+.btn-outline-danger:disabled {
+  color: #dc3545;
+  border-color: #dc3545;
+  background-color: #fff1f2;
+  opacity: 1;
+}
+
+/* Mantener el gris para los horarios pasados */
+.btn-outline-secondary:disabled {
+  opacity: 0.6;
+}

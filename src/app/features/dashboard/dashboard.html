@@ -1,0 +1,308 @@
+
+<section class="dashboard-contenedor">
+
+  <!-- ENCABEZADO -->
+  <div class="dashboard-encabezado">
+    <div>
+      <h2>Bienvenido a VetCare</h2>
+      <p class="text-muted">
+        Panel de administración veterinaria
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-outline-primary"
+      (click)="actualizarContadores()">
+      <i class="bi bi-arrow-clockwise me-1"></i>
+      Actualizar
+    </button>
+  </div>
+
+  <!-- TARJETAS DE RESUMEN -->
+  <div class="row g-3">
+
+    <!-- PROPIETARIOS -->
+    <div class="col-12 col-md-6 col-xl-3">
+      <button
+        type="button"
+        class="card tarjeta-resumen tarjeta-clicable w-100 text-start"
+        (click)="irAPropietarios()">
+
+        <div class="card-body">
+          <div class="tarjeta-titulo">
+            <span>Propietarios registrados</span>
+            <i class="bi bi-people"></i>
+          </div>
+
+          <h3>{{ totalPropietarios }}</h3>
+
+          <span class="tarjeta-enlace">
+            Ver propietarios
+            <i class="bi bi-arrow-right"></i>
+          </span>
+        </div>
+
+      </button>
+    </div>
+
+    <!-- MASCOTAS -->
+    <div class="col-12 col-md-6 col-xl-3">
+      <button
+        type="button"
+        class="card tarjeta-resumen tarjeta-clicable w-100 text-start"
+        (click)="irAMascotas()">
+
+        <div class="card-body">
+          <div class="tarjeta-titulo">
+            <span>Mascotas registradas</span>
+            <i class="bi bi-heart-pulse"></i>
+          </div>
+
+          <h3>{{ totalMascotas }}</h3>
+
+          <span class="tarjeta-enlace">
+            Ver mascotas
+            <i class="bi bi-arrow-right"></i>
+          </span>
+        </div>
+
+      </button>
+    </div>
+
+    <!-- CITAS -->
+    <div class="col-12 col-md-6 col-xl-3">
+      <button
+        type="button"
+        class="card tarjeta-resumen tarjeta-clicable w-100 text-start"
+        (click)="irACitas()">
+
+        <div class="card-body">
+          <div class="tarjeta-titulo">
+            <span>Citas programadas</span>
+            <i class="bi bi-calendar-check"></i>
+          </div>
+
+          <h3>{{ totalCitas }}</h3>
+
+          <span class="tarjeta-enlace">
+            Gestionar citas
+            <i class="bi bi-arrow-right"></i>
+          </span>
+        </div>
+
+      </button>
+    </div>
+
+    <!-- ATENCIONES -->
+    <div class="col-12 col-md-6 col-xl-3">
+      <button
+        type="button"
+        class="card tarjeta-resumen tarjeta-clicable w-100 text-start"
+        (click)="irAHistorial()">
+
+        <div class="card-body">
+          <div class="tarjeta-titulo">
+            <span>Atenciones realizadas</span>
+            <i class="bi bi-clipboard2-pulse"></i>
+          </div>
+
+          <h3>{{ totalAtenciones }}</h3>
+
+          <span class="tarjeta-enlace">
+            Ver historial
+            <i class="bi bi-arrow-right"></i>
+          </span>
+        </div>
+
+      </button>
+    </div>
+
+  </div>
+
+  <!-- ACCESOS RÁPIDOS -->
+  <div class="dashboard-seccion">
+
+    <div class="seccion-encabezado">
+      <h4>Accesos rápidos</h4>
+      <p class="text-muted">
+        Accede directamente a las funciones principales.
+      </p>
+    </div>
+
+    <div class="row g-3">
+
+      <div class="col-12 col-sm-6 col-xl-3">
+        <button
+          type="button"
+          class="acceso-rapido w-100"
+          (click)="registrarPropietario()">
+          <i class="bi bi-person-plus"></i>
+          <span>Registrar propietario</span>
+          <i class="bi bi-arrow-right acceso-flecha"></i>
+        </button>
+      </div>
+
+      <div class="col-12 col-sm-6 col-xl-3">
+        <button
+          type="button"
+          class="acceso-rapido w-100"
+          (click)="registrarMascota()">
+          <i class="bi bi-heart-pulse"></i>
+          <span>Registrar mascota</span>
+          <i class="bi bi-arrow-right acceso-flecha"></i>
+        </button>
+      </div>
+
+      <div class="col-12 col-sm-6 col-xl-3">
+        <button
+          type="button"
+          class="acceso-rapido w-100"
+          (click)="agendarCita()">
+          <i class="bi bi-calendar-plus"></i>
+          <span>Agendar cita</span>
+          <i class="bi bi-arrow-right acceso-flecha"></i>
+        </button>
+      </div>
+
+      <div class="col-12 col-sm-6 col-xl-3">
+        <button
+          type="button"
+          class="acceso-rapido w-100"
+          (click)="consultarRegistros()">
+          <i class="bi bi-card-list"></i>
+          <span>Consultar registros</span>
+          <i class="bi bi-arrow-right acceso-flecha"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ACTIVIDAD DEL SISTEMA -->
+  <div class="dashboard-seccion">
+    <div class="row g-3">
+
+      <!-- PRÓXIMAS CITAS -->
+      <div class="col-12 col-xl-7">
+        <div class="card panel-dashboard">
+
+          <div class="panel-encabezado">
+            <div>
+              <h4>Próximas citas</h4>
+              <p class="text-muted mb-0">
+                Consultas veterinarias pendientes.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-primary"
+              (click)="irACitas()">
+              Ver todas
+            </button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+
+              <thead>
+                <tr>
+                  <th>Mascota</th>
+                  <th>Fecha</th>
+                  <th>Hora</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                @for (cita of proximasCitas; track cita.id) {
+                  <tr>
+                    <td>
+                      {{ nombreMascota(cita.mascotaId) }}
+                    </td>
+
+                    <td>{{ cita.fecha }}</td>
+                    <td>{{ cita.hora }}</td>
+
+                    <td>
+                      @if (cita.estado === 'PENDIENTE') {
+                        <span class="badge text-bg-warning">
+                          Pendiente
+                        </span>
+                      } @else {
+                        <span class="badge text-bg-info">
+                          Confirmada
+                        </span>
+                      }
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="4" class="sin-actividad">
+                      <i class="bi bi-calendar-x"></i>
+                      <p>No hay próximas citas registradas.</p>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+
+            </table>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ÚLTIMAS MASCOTAS -->
+      <div class="col-12 col-xl-5">
+        <div class="card panel-dashboard">
+
+          <div class="panel-encabezado">
+            <div>
+              <h4>Últimas mascotas registradas</h4>
+              <p class="text-muted mb-0">
+                Registros recientes de VetCare.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-primary"
+              (click)="irAMascotas()">
+              Ver todas
+            </button>
+          </div>
+
+          <div class="lista-mascotas">
+
+            @for (mascota of ultimasMascotas; track mascota.id) {
+              <div class="mascota-reciente">
+
+                <div class="mascota-icono">
+                  <i class="bi bi-heart-pulse"></i>
+                </div>
+
+                <div class="mascota-info">
+                  <strong>{{ mascota.nombre }}</strong>
+                  <span>
+                    {{ mascota.especie }} · {{ mascota.raza }}
+                  </span>
+                </div>
+
+              </div>
+            } @empty {
+              <div class="sin-actividad">
+                <i class="bi bi-heart"></i>
+                <p>No hay mascotas registradas.</p>
+              </div>
+            }
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</section>

@@ -1,0 +1,421 @@
+<section class="registros-contenedor">
+  <!-- ENCABEZADO -->
+  <div class="encabezado">
+    <div>
+      <h2>Consultar registros</h2>
+      <p class="text-muted">Consulta los propietarios y mascotas registrados en VetCare.</p>
+    </div>
+
+    <button type="button" class="btn btn-outline-primary" (click)="actualizarRegistros()">
+      <i class="bi bi-arrow-clockwise me-1"></i>
+      Actualizar
+    </button>
+  </div>
+
+  <!-- MENSAJES -->
+  @if (mensajeExito) {
+    <div class="alert alert-success d-flex align-items-center gap-2" role="status">
+      <i class="bi bi-check-circle-fill"></i>
+      <span>{{ mensajeExito }}</span>
+      <button
+        type="button"
+        class="btn-close ms-auto"
+        aria-label="Cerrar mensaje"
+        (click)="limpiarMensajes()"
+      ></button>
+    </div>
+  }
+
+  @if (mensajeError) {
+    <div class="alert alert-danger d-flex align-items-center gap-2" role="alert">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      <span>{{ mensajeError }}</span>
+      <button
+        type="button"
+        class="btn-close ms-auto"
+        aria-label="Cerrar mensaje"
+        (click)="limpiarMensajes()"
+      ></button>
+    </div>
+  }
+
+  <!-- TABLA PRINCIPAL -->
+  <div class="card registros-card">
+    <div class="pestanas">
+      <button
+        type="button"
+        [class.seleccionada]="pestana === 'propietarios'"
+        (click)="cambiarPestana('propietarios')"
+      >
+        <i class="bi bi-people"></i>
+        Propietarios ({{ propietarios.length }})
+      </button>
+
+      <button
+        type="button"
+        [class.seleccionada]="pestana === 'mascotas'"
+        (click)="cambiarPestana('mascotas')"
+      >
+        <i class="bi bi-heart-pulse"></i>
+        Mascotas ({{ mascotas.length }})
+      </button>
+    </div>
+
+    <!-- BUSCADOR -->
+    <div class="buscador">
+      <i class="bi bi-search"></i>
+      <input
+        type="search"
+        class="form-control"
+        [(ngModel)]="busqueda"
+        [placeholder]="
+          pestana === 'propietarios'
+            ? 'Buscar por código, nombre, DNI o correo'
+            : 'Buscar por mascota, especie, raza, propietario o código'
+        "
+      />
+    </div>
+
+    <div class="table-responsive">
+      <!-- TABLA DE PROPIETARIOS -->
+      @if (pestana === 'propietarios') {
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Propietario</th>
+              <th>DNI</th>
+              <th>Mascotas registradas</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (p of propietariosFiltrados; track p.id) {
+              <tr>
+                <td>
+                  <span class="badge bg-light text-primary border">
+                    {{ p.codigo || 'Sin código' }}
+                  </span>
+                </td>
+
+                <td>
+                  <span class="fw-medium"> {{ p.nombres }} {{ p.apellidos }} </span>
+                </td>
+
+                <td>{{ p.dni }}</td>
+
+                <td>
+                  <span class="badge bg-light text-dark border">
+                    {{ cantidadMascotas(p.id) }}
+                  </span>
+                </td>
+
+                <td class="text-center">
+                  <div class="d-flex justify-content-center gap-2 flex-wrap">
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-primary"
+                      (click)="verPropietario(p)"
+                    >
+                      <i class="bi bi-eye me-1"></i>
+                      Ver ficha
+                    </button>
+
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-danger"
+                      (click)="confirmarEliminarPropietario(p)"
+                    >
+                      <i class="bi bi-trash me-1"></i>
+                      Eliminar
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5" class="sin-datos">No se encontraron propietarios.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      } @else {
+        <!-- TABLA DE MASCOTAS -->
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr>
+              <th>Mascota</th>
+              <th>Especie</th>
+              <th>Propietario</th>
+              <th>Código del propietario</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (m of mascotasFiltradas; track m.id) {
+              <tr>
+                <td>
+                  <span class="fw-medium">{{ m.nombre }}</span>
+                </td>
+
+                <td>{{ especieVisible(m) }}</td>
+
+                <td>
+                  {{ nombrePropietario(m.propietarioId) }}
+                </td>
+
+                <td>
+                  <span class="badge bg-light text-primary border">
+                    {{ codigoPropietario(m.propietarioId) }}
+                  </span>
+                </td>
+
+                <td class="text-center">
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-primary"
+                    (click)="verMascota(m)"
+                  >
+                    <i class="bi bi-eye me-1"></i>
+                    Ver ficha
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5" class="sin-datos">No se encontraron mascotas.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  </div>
+
+  <!-- FICHA DEL PROPIETARIO -->
+  @if (propietarioSeleccionado; as p) {
+    <div class="ficha-fondo" (click)="cerrarDetalles()">
+      <div
+        class="ficha-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Ficha del propietario"
+        (click)="$event.stopPropagation()"
+      >
+        <div class="ficha-encabezado">
+          <div class="ficha-identidad">
+            <div class="ficha-icono">
+              <i class="bi bi-person-circle"></i>
+            </div>
+
+            <div>
+              <h3>{{ p.nombres }} {{ p.apellidos }}</h3>
+              <p>Código: {{ p.codigo || 'Sin código' }} · DNI {{ p.dni }}</p>
+            </div>
+          </div>
+
+          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="cerrarDetalles()">
+            <i class="bi bi-x-lg me-1"></i>
+            Cerrar
+          </button>
+        </div>
+
+        <h5>Información de contacto</h5>
+
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <span class="ficha-etiqueta">Código de propietario</span>
+            <p class="fw-semibold">
+              {{ p.codigo || 'Sin código' }}
+            </p>
+          </div>
+
+          <div class="col-md-6">
+            <span class="ficha-etiqueta">DNI</span>
+            <p>{{ p.dni }}</p>
+          </div>
+
+          <div class="col-md-6">
+            <span class="ficha-etiqueta">Celular</span>
+            <p>{{ p.telefono }}</p>
+          </div>
+
+          <div class="col-md-6">
+            <span class="ficha-etiqueta">Correo electrónico</span>
+            <p>{{ p.correo }}</p>
+          </div>
+
+          <div class="col-12">
+            <span class="ficha-etiqueta">Dirección</span>
+            <p>{{ p.direccion }}</p>
+          </div>
+        </div>
+
+        <hr />
+
+        <h5>Mascotas asociadas ({{ cantidadMascotas(p.id) }})</h5>
+
+        @for (m of mascotasDelPropietario(p.id); track m.id) {
+          <div class="ficha-mascota">
+            <div>
+              <strong>{{ m.nombre }}</strong>
+              <p>{{ especieVisible(m) }} · {{ m.raza }}</p>
+            </div>
+
+            <button type="button" class="btn btn-sm btn-outline-primary" (click)="verMascota(m)">
+              <i class="bi bi-eye me-1"></i>
+              Ver mascota
+            </button>
+          </div>
+        } @empty {
+          <p class="text-muted">Este propietario todavía no tiene mascotas registradas.</p>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- FICHA DE LA MASCOTA -->
+  @if (mascotaSeleccionada; as m) {
+    <div class="ficha-fondo" (click)="cerrarDetalles()">
+      <div
+        class="ficha-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Ficha de la mascota"
+        (click)="$event.stopPropagation()"
+      >
+        <div class="ficha-encabezado">
+          <div class="ficha-identidad">
+            <div class="ficha-icono">
+              <i class="bi bi-heart-pulse"></i>
+            </div>
+
+            <div>
+              <h3>{{ m.nombre }}</h3>
+              <p>{{ especieVisible(m) }} · {{ m.raza }}</p>
+            </div>
+          </div>
+
+          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="cerrarDetalles()">
+            <i class="bi bi-x-lg me-1"></i>
+            Cerrar
+          </button>
+        </div>
+
+        <h5>Información de la mascota</h5>
+
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <span class="ficha-etiqueta">Especie</span>
+            <p>{{ especieVisible(m) }}</p>
+          </div>
+
+          <div class="col-md-6">
+            <span class="ficha-etiqueta">Raza</span>
+            <p>{{ m.raza }}</p>
+          </div>
+
+          <div class="col-md-6">
+            <span class="ficha-etiqueta">Sexo</span>
+            <p>{{ m.sexo === 'MACHO' ? 'Macho' : 'Hembra' }}</p>
+          </div>
+
+          <div class="col-md-6">
+            <span class="ficha-etiqueta">Peso</span>
+            <p>
+              {{ m.peso === null ? 'No registrado' : m.peso + ' kg' }}
+            </p>
+          </div>
+
+          <div class="col-md-6">
+            <span class="ficha-etiqueta">Fecha de nacimiento</span>
+            <p>{{ m.fechaNacimiento }}</p>
+          </div>
+
+          <div class="col-md-6">
+            <span class="ficha-etiqueta">Propietario</span>
+            <p>{{ nombrePropietario(m.propietarioId) }}</p>
+          </div>
+
+          <div class="col-md-6">
+            <span class="ficha-etiqueta">Código del propietario</span>
+            <p class="fw-semibold">
+              {{ codigoPropietario(m.propietarioId) }}
+            </p>
+          </div>
+
+          <div class="col-12">
+            <span class="ficha-etiqueta">Observaciones</span>
+            <p>{{ m.observaciones || 'Sin observaciones' }}</p>
+          </div>
+        </div>
+
+        <hr />
+
+        <h5>Gestión veterinaria</h5>
+
+        <div class="row g-2">
+          <div class="col-12 col-sm-6">
+            <button type="button" class="btn btn-outline-primary w-100" disabled>
+              <i class="bi bi-calendar-plus me-2"></i>
+              Agendar cita
+            </button>
+          </div>
+
+          <div class="col-12 col-sm-6">
+            <button type="button" class="btn btn-outline-primary w-100" disabled>
+              <i class="bi bi-clipboard2-pulse me-2"></i>
+              Historial clínico
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- CONFIRMACIÓN PARA ELIMINAR PROPIETARIO -->
+  @if (propietarioParaEliminar; as propietario) {
+    <div class="ficha-fondo" (click)="cancelarEliminarPropietario()">
+      <div
+        class="ficha-modal confirmacion-eliminar"
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="titulo-eliminar"
+        aria-describedby="descripcion-eliminar"
+        (click)="$event.stopPropagation()"
+      >
+        <div class="text-center mb-3">
+          <i class="bi bi-exclamation-triangle text-danger fs-1"></i>
+        </div>
+
+        <h3 id="titulo-eliminar" class="text-center mb-3">¿Eliminar propietario?</h3>
+
+        <p id="descripcion-eliminar" class="text-center text-muted">
+          Estás a punto de eliminar a
+          <strong>
+            {{ propietario.nombres }}
+            {{ propietario.apellidos }} </strong
+          >. Esta acción eliminará también todas las mascotas del propietario, sus citas y sus
+          atenciones clínicas asociadas. No se puede deshacer.
+        </p>
+
+        <div class="d-flex justify-content-center gap-3 mt-4">
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            (click)="cancelarEliminarPropietario()"
+          >
+            Cancelar
+          </button>
+
+          <button type="button" class="btn btn-danger" (click)="eliminarPropietario()">
+            <i class="bi bi-trash me-1"></i>
+            Sí, eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</section>

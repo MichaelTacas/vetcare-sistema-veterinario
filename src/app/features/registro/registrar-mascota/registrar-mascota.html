@@ -1,0 +1,153 @@
+
+<div class="formulario-contenedor">
+  <div class="formulario-card">
+
+    <h2>Registrar mascota</h2>
+    <p class="text-muted">
+      Complete los datos de la mascota y seleccione su propietario.
+    </p>
+
+    @if (mensaje) {
+      <div class="alert alert-success">{{ mensaje }}</div>
+    }
+
+    @if (error) {
+      <div class="alert alert-danger">{{ error }}</div>
+    }
+
+    <form [formGroup]="formulario" (ngSubmit)="guardar()">
+
+      <div class="row g-3 mt-2">
+
+        <div class="col-md-6">
+          <label class="form-label">Nombre de la mascota</label>
+          <input class="form-control" formControlName="nombre">
+          @if (formulario.controls.nombre.touched &&
+               formulario.controls.nombre.invalid) {
+            <small class="text-danger">
+              Ingrese un nombre de 2 a 50 caracteres.
+            </small>
+          }
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Especie</label>
+          <select class="form-select" formControlName="especie">
+            <option value="PERRO">Perro</option>
+            <option value="GATO">Gato</option>
+            <option value="OTRO">Otro</option>
+          </select>
+        </div>
+
+        @if (formulario.controls.especie.value === 'OTRO') {
+          <div class="col-12">
+            <label class="form-label">
+              Especifique el tipo de animal
+            </label>
+            <input
+              class="form-control"
+              formControlName="otraEspecie"
+              list="tipos-animales"
+              placeholder="Ej. Loro, conejo, tortuga"
+            >
+            <datalist id="tipos-animales">
+              <option value="Loro"></option>
+              <option value="Conejo"></option>
+              <option value="Hámster"></option>
+              <option value="Tortuga"></option>
+              <option value="Iguana"></option>
+            </datalist>
+          </div>
+        }
+
+        <div class="col-md-6">
+          <label class="form-label">Raza</label>
+          <input class="form-control" formControlName="raza">
+          @if (formulario.controls.raza.touched &&
+               formulario.controls.raza.invalid) {
+            <small class="text-danger">
+              Ingrese una raza de 2 a 60 caracteres.
+            </small>
+          }
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Sexo</label>
+          <select class="form-select" formControlName="sexo">
+            <option value="MACHO">Macho</option>
+            <option value="HEMBRA">Hembra</option>
+          </select>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Fecha de nacimiento</label>
+          <input
+            type="date"
+            class="form-control"
+            formControlName="fechaNacimiento"
+          >
+          @if (formulario.controls.fechaNacimiento.touched &&
+               formulario.controls.fechaNacimiento.invalid) {
+            <small class="text-danger">
+              La fecha no puede ser futura.
+            </small>
+          }
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Peso en kg (opcional)</label>
+          <input
+            type="number"
+            min="0.01"
+            step="0.1"
+            class="form-control"
+            formControlName="peso"
+          >
+        </div>
+
+        <div class="col-12">
+          <label class="form-label">Propietario</label>
+          <select
+            class="form-select"
+            formControlName="propietarioId"
+          >
+            <option value="">Seleccione un propietario</option>
+
+            @for (propietario of propietarios; track propietario.id) {
+              <option [value]="propietario.id">
+                {{ propietario.nombres }}
+                {{ propietario.apellidos }}
+                - {{ propietario.dni }}
+              </option>
+            }
+          </select>
+
+          @if (formulario.controls.propietarioId.touched &&
+               formulario.controls.propietarioId.invalid) {
+            <small class="text-danger">
+              Seleccione un propietario registrado.
+            </small>
+          }
+        </div>
+
+        <div class="col-12">
+          <label class="form-label">Observaciones (opcional)</label>
+          <textarea
+            class="form-control"
+            rows="3"
+            formControlName="observaciones"
+          ></textarea>
+        </div>
+
+      </div>
+
+      <div class="d-flex justify-content-end mt-4">
+        <button type="submit" class="btn btn-success">
+          <i class="bi bi-floppy"></i>
+          Guardar mascota
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

@@ -1,0 +1,302 @@
+
+<div class="container-fluid py-4">
+  <h2 class="mb-2">Lista de citas veterinarias</h2>
+
+  <p class="text-muted mb-4">
+    Consulta y administra las citas programadas, sus mascotas y propietarios.
+  </p>
+
+  <!-- MENSAJES -->
+  @if (mensajeExito) {
+    <div class="alert alert-success" role="status">
+      <i class="bi bi-check-circle me-2"></i>
+      {{ mensajeExito }}
+    </div>
+  }
+
+  @if (mensajeError) {
+    <div class="alert alert-danger" role="alert">
+      <i class="bi bi-exclamation-triangle me-2"></i>
+      {{ mensajeError }}
+    </div>
+  }
+
+  <!-- TABLA DE CITAS -->
+  <div class="card shadow-sm border-0">
+    <div class="card-body">
+
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">Citas registradas</h5>
+
+        <button
+          type="button"
+          class="btn btn-outline-primary btn-sm"
+          (click)="cargarDatos()"
+        >
+          <i class="bi bi-arrow-clockwise me-1"></i>
+          Actualizar
+        </button>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Código</th>
+              <th>Mascota</th>
+              <th>Propietario</th>
+              <th>Código propietario</th>
+              <th>Fecha</th>
+              <th>Hora</th>
+              <th>Motivo</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (cita of citas; track cita.id) {
+              <tr>
+                <td class="fw-semibold">
+                  {{ codigoCita(cita) }}
+                </td>
+
+                <td>
+                  {{ obtenerMascota(cita.mascotaId) }}
+                </td>
+
+                <td>
+                  {{ obtenerPropietario(cita.mascotaId) }}
+                </td>
+
+                <td>
+                  {{ obtenerCodigoPropietario(cita.mascotaId) }}
+                </td>
+
+                <td>{{ cita.fecha }}</td>
+                <td>{{ cita.hora }}</td>
+                <td>{{ cita.motivo }}</td>
+
+                <!-- ESTADO -->
+                <td>
+                  <span
+                    class="badge"
+                    [class.bg-warning]="cita.estado === 'PENDIENTE'"
+                    [class.text-dark]="cita.estado === 'PENDIENTE'"
+                    [class.bg-primary]="cita.estado === 'CONFIRMADA'"
+                    [class.bg-success]="cita.estado === 'ATENDIDA'"
+                    [class.bg-danger]="cita.estado === 'CANCELADA'"
+                  >
+                    {{ cita.estado }}
+                  </span>
+                </td>
+
+                <!-- ACCIONES -->
+                <td>
+                  <div class="d-flex flex-wrap gap-2">
+
+                    @if (cita.estado === 'PENDIENTE') {
+                      <button
+                        type="button"
+                        class="btn btn-outline-success btn-sm"
+                        (click)="confirmarCita(cita)"
+                      >
+                        <i class="bi bi-check-circle me-1"></i>
+                        Confirmar
+                      </button>
+                    }
+
+                    @if (cita.estado === 'CONFIRMADA') {
+                      <button
+                        type="button"
+                        class="btn btn-outline-primary btn-sm"
+                        (click)="abrirAtencion(cita)"
+                      >
+                        <i class="bi bi-clipboard2-pulse me-1"></i>
+                        Registrar atención
+                      </button>
+                    }
+
+                    @if (
+                      cita.estado === 'PENDIENTE' ||
+                      cita.estado === 'CONFIRMADA'
+                    ) {
+                      <button
+                        type="button"
+                        class="btn btn-outline-danger btn-sm"
+                        (click)="cancelarCita(cita)"
+                      >
+                        <i class="bi bi-x-circle me-1"></i>
+                        Cancelar
+                      </button>
+                    }
+
+                    @if (cita.estado === 'ATENDIDA') {
+                      <span class="text-success small">
+                        <i class="bi bi-check-circle-fill me-1"></i>
+                        Finalizada
+                      </span>
+                    }
+
+                    @if (cita.estado === 'CANCELADA') {
+                      <span class="text-danger small">
+                        Cancelada
+                      </span>
+                    }
+
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="9" class="text-center text-muted py-4">
+                  Todavía no hay citas registradas.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORMULARIO DE ATENCIÓN VETERINARIA -->
+  @if (citaSeleccionada) {
+    <div class="card shadow-sm border-0 mt-4">
+      <div class="card-body p-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="mb-0">
+            <i class="bi bi-clipboard2-pulse me-2"></i>
+            Registrar atención veterinaria
+          </h4>
+
+          <button
+            type="button"
+            class="btn btn-outline-secondary btn-sm"
+            (click)="cerrarAtencion()"
+          >
+            Cerrar
+          </button>
+        </div>
+
+        <!-- INFORMACIÓN DE LA CITA -->
+        <div class="bg-light border rounded p-3 mb-4">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <strong>Código de cita:</strong>
+              <div>{{ codigoCita(citaSeleccionada) }}</div>
+            </div>
+
+            <div class="col-md-4">
+              <strong>Mascota:</strong>
+              <div>{{ obtenerMascota(citaSeleccionada.mascotaId) }}</div>
+            </div>
+
+            <div class="col-md-4">
+              <strong>Propietario:</strong>
+              <div>{{ obtenerPropietario(citaSeleccionada.mascotaId) }}</div>
+            </div>
+
+            <div class="col-md-4">
+              <strong>Fecha de cita:</strong>
+              <div>{{ citaSeleccionada.fecha }}</div>
+            </div>
+
+            <div class="col-md-8">
+              <strong>Motivo:</strong>
+              <div>{{ citaSeleccionada.motivo }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DATOS CLÍNICOS -->
+        <form
+          [formGroup]="formularioAtencion"
+          (ngSubmit)="guardarAtencion()"
+        >
+
+          <div class="mb-3">
+            <label for="diagnostico" class="form-label fw-semibold">
+              Diagnóstico
+            </label>
+
+            <textarea
+              id="diagnostico"
+              class="form-control"
+              formControlName="diagnostico"
+              rows="3"
+              placeholder="Ejemplo: La mascota presenta una infección leve."
+            ></textarea>
+
+            @if (
+              formularioAtencion.controls.diagnostico.touched &&
+              formularioAtencion.controls.diagnostico.invalid
+            ) {
+              <small class="text-danger">
+                Ingrese un diagnóstico válido (máximo 500 caracteres).
+              </small>
+            }
+          </div>
+
+          <div class="mb-3">
+            <label for="tratamiento" class="form-label fw-semibold">
+              Tratamiento
+            </label>
+
+            <textarea
+              id="tratamiento"
+              class="form-control"
+              formControlName="tratamiento"
+              rows="3"
+              placeholder="Ejemplo: Tratamiento indicado por el veterinario."
+            ></textarea>
+
+            @if (
+              formularioAtencion.controls.tratamiento.touched &&
+              formularioAtencion.controls.tratamiento.invalid
+            ) {
+              <small class="text-danger">
+                Ingrese un tratamiento válido (máximo 500 caracteres).
+              </small>
+            }
+          </div>
+
+          <div class="mb-4">
+            <label for="observaciones" class="form-label fw-semibold">
+              Observaciones
+            </label>
+
+            <textarea
+              id="observaciones"
+              class="form-control"
+              formControlName="observaciones"
+              rows="3"
+              placeholder="Ejemplo: Se recomienda una próxima revisión."
+            ></textarea>
+          </div>
+
+          <div class="d-flex flex-wrap gap-2">
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="formularioAtencion.invalid"
+            >
+              <i class="bi bi-save me-2"></i>
+              Guardar atención
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              (click)="cerrarAtencion()"
+            >
+              Cancelar
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  }
+</div>

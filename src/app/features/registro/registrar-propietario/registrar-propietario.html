@@ -1,0 +1,91 @@
+
+<div class="formulario-contenedor">
+  <div class="formulario-card">
+
+    <h2>Registrar propietario</h2>
+    <p class="text-muted">
+      Complete los datos del propietario de la mascota.
+    </p>
+
+    @if (mensaje) {
+      <div class="alert alert-success">{{ mensaje }}</div>
+    }
+
+    @if (error) {
+      <div class="alert alert-danger">{{ error }}</div>
+    }
+
+    <form [formGroup]="formulario" (ngSubmit)="guardar()">
+
+      <div class="row g-3 mt-2">
+        <div class="col-md-6">
+          <label class="form-label">Nombres</label>
+          <input class="form-control" formControlName="nombres">
+          @if (formulario.controls.nombres.touched &&
+               formulario.controls.nombres.invalid) {
+            <small class="text-danger">Ingrese al menos 2 caracteres.</small>
+          }
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Apellidos</label>
+          <input class="form-control" formControlName="apellidos">
+          @if (formulario.controls.apellidos.touched &&
+               formulario.controls.apellidos.invalid) {
+            <small class="text-danger">Ingrese al menos 2 caracteres.</small>
+          }
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">DNI</label>
+          <input class="form-control" formControlName="dni"
+                 maxlength="8" inputmode="numeric">
+          @if (formulario.controls.dni.touched &&
+               formulario.controls.dni.invalid) {
+            <small class="text-danger">El DNI debe tener 8 dígitos.</small>
+          }
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Celular</label>
+          <input class="form-control" formControlName="telefono"
+                 maxlength="9" inputmode="numeric">
+          @if (formulario.controls.telefono.touched &&
+               formulario.controls.telefono.invalid) {
+            <small class="text-danger">
+              Debe tener 9 dígitos y comenzar con 9.
+            </small>
+          }
+        </div>
+
+        <div class="col-12">
+          <label class="form-label">Correo electrónico</label>
+          <input type="email" class="form-control" formControlName="correo">
+          @if (formulario.controls.correo.touched &&
+               formulario.controls.correo.invalid) {
+            <small class="text-danger">Ingrese un correo válido.</small>
+          }
+        </div>
+
+        <div class="col-12">
+          <label class="form-label">Dirección</label>
+          <input class="form-control" formControlName="direccion">
+          @if (formulario.controls.direccion.touched &&
+               formulario.controls.direccion.invalid) {
+            <small class="text-danger">
+              Ingrese una dirección de 5 a 150 caracteres.
+            </small>
+          }
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-end mt-4">
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-floppy"></i>
+          Guardar propietario
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

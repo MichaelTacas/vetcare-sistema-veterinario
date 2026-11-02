@@ -1,0 +1,202 @@
+
+<section class="container-fluid">
+  <h1>Gestión de citas veterinarias</h1>
+  <p class="text-muted">
+    Programa las próximas consultas de las mascotas.
+  </p>
+
+  <div class="card p-4 mt-4">
+    <h3 class="mb-4">Agendar nueva cita</h3>
+
+    @if (mensaje) {
+      <div class="alert alert-success" role="status">
+        {{ mensaje }}
+      </div>
+    }
+
+    @if (error) {
+      <div class="alert alert-danger" role="alert">
+        {{ error }}
+      </div>
+    }
+
+    <form [formGroup]="formulario" (ngSubmit)="guardar()">
+
+      <!-- SELECCIONAR MASCOTA -->
+      <div class="mb-3">
+        <label for="mascota" class="form-label">
+          Mascota
+        </label>
+
+        <select
+          id="mascota"
+          class="form-select"
+          formControlName="mascotaId"
+        >
+          <option value="">Seleccione una mascota</option>
+
+          @for (mascota of mascotas; track mascota.id) {
+            <option [value]="mascota.id">
+              {{ mascota.nombre }} - {{ mascota.especie }}
+            </option>
+          }
+        </select>
+
+        @if (
+          formulario.controls.mascotaId.touched &&
+          formulario.controls.mascotaId.invalid
+        ) {
+          <small class="text-danger">
+            Seleccione una mascota.
+          </small>
+        }
+      </div>
+
+      <!-- SELECCIONAR FECHA -->
+      <div class="mb-3">
+        <label for="fecha" class="form-label">
+          Fecha de la cita
+        </label>
+
+        <input
+          id="fecha"
+          type="date"
+          class="form-control"
+          formControlName="fecha"
+          [min]="fechaMinima"
+          (change)="cambiarFecha()"
+        />
+
+        @if (
+          formulario.controls.fecha.touched &&
+          formulario.controls.fecha.invalid
+        ) {
+          <small class="text-danger">
+            Seleccione una fecha.
+          </small>
+        }
+      </div>
+
+      <!-- HORARIOS DISPONIBLES -->
+      <div class="mb-4">
+        <label class="form-label fw-semibold">
+          Horarios disponibles
+        </label>
+
+        @if (!formulario.controls.fecha.value) {
+          <div class="alert alert-light border text-muted mb-0">
+            <i class="bi bi-calendar-event me-2"></i>
+            Primero seleccione una fecha para consultar los horarios.
+          </div>
+        } @else {
+          <div class="d-flex flex-wrap gap-2">
+
+            @for (hora of horarios; track hora) {
+              <button
+                type="button"
+                class="btn"
+                [class.btn-primary]="
+                  formulario.controls.hora.value === hora
+                "
+                [class.btn-outline-primary]="
+                  formulario.controls.hora.value !== hora &&
+                  !horarioOcupado(hora) &&
+                  !horarioPasado(hora)
+                "
+                [class.btn-outline-danger]="
+                  horarioOcupado(hora)
+                "
+                [class.btn-outline-secondary]="
+                  !horarioOcupado(hora) &&
+                  horarioPasado(hora)
+                "
+                [disabled]="
+                  horarioOcupado(hora) || horarioPasado(hora)
+                "
+                (click)="seleccionarHorario(hora)"
+              >
+                {{ hora }}
+              </button>
+            }
+
+          </div>
+
+          <!-- LEYENDA DE COLORES -->
+          <div class="d-flex flex-wrap gap-3 mt-3 small text-muted">
+            <span>
+              <i class="bi bi-circle text-primary me-1"></i>
+              Disponible
+            </span>
+
+            <span>
+              <i class="bi bi-circle-fill text-primary me-1"></i>
+              Seleccionado
+            </span>
+
+            <span>
+              <i class="bi bi-circle-fill text-danger me-1"></i>
+              Ocupado
+            </span>
+
+            <span>
+              <i class="bi bi-circle-fill text-secondary me-1"></i>
+              Horario pasado
+            </span>
+          </div>
+
+          @if (formulario.controls.hora.value) {
+            <div class="alert alert-info mt-3 mb-0">
+              <i class="bi bi-clock me-2"></i>
+              Horario seleccionado:
+              <strong>{{ formulario.controls.hora.value }}</strong>
+            </div>
+          }
+        }
+
+        @if (
+          formulario.controls.hora.touched &&
+          formulario.controls.hora.invalid
+        ) {
+          <small class="text-danger d-block mt-2">
+            Seleccione un horario disponible.
+          </small>
+        }
+      </div>
+
+      <!-- MOTIVO DE CONSULTA -->
+      <div class="mb-3">
+        <label for="motivo" class="form-label">
+          Motivo de consulta
+        </label>
+
+        <textarea
+          id="motivo"
+          class="form-control"
+          formControlName="motivo"
+          rows="3"
+          placeholder="Ejemplo: Vacunación, control médico o desparasitación"
+        ></textarea>
+
+        @if (
+          formulario.controls.motivo.touched &&
+          formulario.controls.motivo.invalid
+        ) {
+          <small class="text-danger">
+            Ingrese un motivo de 5 a 300 caracteres.
+          </small>
+        }
+      </div>
+
+      <!-- GUARDAR CITA -->
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="formulario.invalid"
+      >
+        <i class="bi bi-calendar-plus me-2"></i>
+        Agendar cita
+      </button>
+
+    </form>
+  </div>
+</section>
